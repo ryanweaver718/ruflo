@@ -248,7 +248,10 @@ export class ConfigLoader {
   private deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
     const result = { ...target };
 
+    const BLOCKED_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
     for (const key of Object.keys(source)) {
+      if (BLOCKED_KEYS.has(key)) continue;
       const sourceValue = source[key];
       const targetValue = target[key];
 

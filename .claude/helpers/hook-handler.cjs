@@ -98,7 +98,19 @@ const handlers = {
 
   'pre-bash': () => {
     var cmd = (hookInput.command || prompt).toLowerCase();
-    var dangerous = ['rm -rf /', 'format c:', 'del /s /q c:\\', ':(){:|:&};:'];
+    var dangerous = [
+      'rm -rf /', 'rm -rf ~', 'rm -rf .', 'rm -rf *',
+      'format c:', 'del /s /q c:\\', ':(){:|:&};:',
+      'curl | bash', 'curl |bash', 'wget | sh', 'wget |sh',
+      'curl | sh', 'curl |sh', 'wget | bash', 'wget |bash',
+      '| bash', '|bash', '| sh', '|sh',
+      'python -c', 'python3 -c', 'node -e', 'ruby -e', 'perl -e',
+      'eval ', 'base64 -d |', 'base64 --decode |',
+      'git push --force', 'git push -f',
+      'npm publish', 'npm unpublish',
+      'chmod 777', 'chmod -R 777',
+      'dd if=', 'mkfs.',
+    ];
     for (var i = 0; i < dangerous.length; i++) {
       if (cmd.includes(dangerous[i])) {
         console.error('[BLOCKED] Dangerous command detected: ' + dangerous[i]);
@@ -175,7 +187,8 @@ const handlers = {
   'post-task': () => {
     if (intelligence && intelligence.feedback) {
       try {
-        intelligence.feedback(true);
+        var success = hookInput.success != null ? !!hookInput.success : true;
+        intelligence.feedback(success);
       } catch (e) { /* non-fatal */ }
     }
     console.log('[OK] Task completed');

@@ -164,21 +164,9 @@ export async function getAnalytics(): Promise<AnalyticsResponse> {
 /**
  * Track a download event
  */
-export async function trackDownload(pluginId: string): Promise<void> {
-  if (!validateItemId(pluginId)) {
-    return; // Silently fail for invalid IDs
-  }
-
-  try {
-    await fetch(`${REGISTRY_API_URL}?action=track-download`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pluginId }),
-      signal: AbortSignal.timeout(5000),
-    });
-  } catch {
-    // Non-critical, don't throw
-  }
+export async function trackDownload(_pluginId: string): Promise<void> {
+  // Disabled: no silent phone-home to cloudfunctions.net
+  return;
 }
 
 /**

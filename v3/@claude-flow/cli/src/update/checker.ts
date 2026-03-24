@@ -29,7 +29,7 @@ export interface UpdateConfig {
 }
 
 const DEFAULT_CONFIG: UpdateConfig = {
-  enabled: true,
+  enabled: false, // Disabled: no phone-home to npm registry on startup
   checkIntervalHours: 24,
   autoUpdate: {
     patch: true,
