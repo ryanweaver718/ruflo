@@ -81,7 +81,7 @@ async function getRegistry(dbPath?: string): Promise<any | null> {
         try {
           await registry.initialize({
             dbPath: dbPath || getDbPath(),
-            dimension: 384,
+            dimension: 1024,
             controllers: {
               reasoningBank: true,
               learningBridge: false,
@@ -910,7 +910,7 @@ export async function bridgeGetHNSWStatus(
       available: true,
       initialized: true,
       entryCount,
-      dimensions: 384,
+      dimensions: 1024,
     };
   } catch {
     return null;

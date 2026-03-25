@@ -844,7 +844,7 @@ export class ControllerRegistry extends EventEmitter {
           const agentdbModule: any = await import('agentdb');
           const MG = agentdbModule.MutationGuard;
           if (!MG) return null;
-          return new MG({ dimension: this.config.dimension || 384 });
+          return new MG({ dimension: this.config.dimension || 1024 });
         } catch { return null; }
       }
 
@@ -867,7 +867,7 @@ export class ControllerRegistry extends EventEmitter {
           const agentdbModule: any = await import('agentdb');
           const GNN = agentdbModule.GNNService;
           if (!GNN) return null;
-          const gnn = new GNN({ inputDim: this.config.dimension || 384 });
+          const gnn = new GNN({ inputDim: this.config.dimension || 1024 });
           await gnn.initialize();
           return gnn;
         } catch { return null; }
@@ -959,8 +959,8 @@ export class ControllerRegistry extends EventEmitter {
     }
     // Return a minimal stub — HierarchicalMemory falls back to manualSearch without embeddings
     return {
-      embed: async () => new Float32Array(this.config.dimension || 384),
-      embedBatch: async (texts: string[]) => texts.map(() => new Float32Array(this.config.dimension || 384)),
+      embed: async () => new Float32Array(this.config.dimension || 1024),
+      embedBatch: async (texts: string[]) => texts.map(() => new Float32Array(this.config.dimension || 1024)),
       initialize: async () => {},
     };
   }

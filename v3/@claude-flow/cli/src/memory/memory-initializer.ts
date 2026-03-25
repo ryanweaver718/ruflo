@@ -352,7 +352,7 @@ export async function getHNSWIndex(options?: {
   dimensions?: number;
   forceRebuild?: boolean;
 }): Promise<HNSWIndex | null> {
-  const dimensions = options?.dimensions ?? 384;
+  const dimensions = options?.dimensions ?? 1024;
 
   // Return existing index if already initialized
   if (hnswIndex?.initialized && !options?.forceRebuild) {
@@ -1518,46 +1518,30 @@ export async function loadEmbeddingModel(options?: {
     };
   }
 
-  // ADR-053: Try AgentDB v3 bridge first
-  const bridge = await getBridge();
-  if (bridge) {
-    const bridgeResult = await bridge.bridgeLoadEmbeddingModel();
-    if (bridgeResult && bridgeResult.success) {
-      // Mark local state as loaded too so subsequent calls use cache
-      embeddingModelState = {
-        loaded: true,
-        model: null, // Bridge handles embedding
-        tokenizer: null,
-        dimensions: bridgeResult.dimensions
-      };
-      return bridgeResult;
-    }
-  }
-
   try {
-    // Try to import @xenova/transformers for ONNX embeddings
+    // Prefer high-quality Xenova/bge-large-en-v1.5 embeddings (1024d)
     const transformers = await import('@xenova/transformers').catch(() => null);
 
     if (transformers) {
       if (verbose) {
-        console.log('Loading ONNX embedding model (all-MiniLM-L6-v2)...');
+        console.log('Loading ONNX embedding model (bge-large-en-v1.5)...');
       }
 
-      // Use small, fast model for local embeddings
+      // Use high-quality large model for semantic embeddings
       const { pipeline } = transformers;
-      const embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+      const embedder = await pipeline('feature-extraction', 'Xenova/bge-large-en-v1.5');
 
       embeddingModelState = {
         loaded: true,
         model: embedder,
         tokenizer: null,
-        dimensions: 384 // MiniLM-L6 produces 384-dim vectors
+        dimensions: 1024 // bge-large-en-v1.5 produces 1024-dim vectors
       };
 
       return {
         success: true,
-        dimensions: 384,
-        modelName: 'all-MiniLM-L6-v2',
+        dimensions: 1024,
+        modelName: 'bge-large-en-v1.5',
         loadTime: Date.now() - startTime
       };
     }
