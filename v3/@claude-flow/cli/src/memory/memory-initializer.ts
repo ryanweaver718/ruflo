@@ -1658,52 +1658,50 @@ export async function loadEmbeddingModel(options?: {
  * Generate real embedding for text
  * Uses ONNX model if available, falls back to deterministic hash
  */
+// Dedicated Xenova bge-large-en-v1.5 embedder singleton
+let _xenovaPipeline: any = null;
+let _xenovaLoading: Promise<any> | null = null;
+
+async function getXenovaEmbedder(): Promise<any> {
+  if (_xenovaPipeline) return _xenovaPipeline;
+  if (_xenovaLoading) return _xenovaLoading;
+  _xenovaLoading = (async () => {
+    // Resolve from CLI's node_modules, not CWD
+    const { createRequire } = await import('module');
+    const cliRequire = createRequire(import.meta.url ?? __filename);
+    const transformersPath = cliRequire.resolve('@xenova/transformers');
+    const transformers = await import(transformersPath);
+    _xenovaPipeline = await transformers.pipeline('feature-extraction', 'Xenova/bge-large-en-v1.5');
+    return _xenovaPipeline;
+  })();
+  return _xenovaLoading;
+}
+
 export async function generateEmbedding(text: string): Promise<{
   embedding: number[];
   dimensions: number;
   model: string;
 }> {
-  // ADR-053: Try AgentDB v3 bridge first
-  const bridge = await getBridge();
-  if (bridge) {
-    const bridgeResult = await bridge.bridgeGenerateEmbedding(text);
-    if (bridgeResult) return bridgeResult;
+  // Use Xenova/bge-large-en-v1.5 directly (1024d) — bypasses ruvector's MiniLM auto-init
+  try {
+    const embedder = await getXenovaEmbedder();
+    const output = await embedder(text, { pooling: 'mean', normalize: true });
+    const embedding = Array.from(output.data as Float32Array);
+    return {
+      embedding,
+      dimensions: embedding.length,
+      model: 'bge-large-en-v1.5'
+    };
+  } catch {
+    // Fallback to hash-based embeddings if Xenova fails
+    const dimensions = embeddingModelState?.dimensions ?? 1024;
+    const embedding = generateHashEmbedding(text, dimensions);
+    return {
+      embedding,
+      dimensions,
+      model: 'hash-fallback'
+    };
   }
-
-  // Ensure model is loaded
-  if (!embeddingModelState?.loaded) {
-    await loadEmbeddingModel();
-  }
-
-  const state = embeddingModelState!;
-
-  // Use ONNX model if available
-  if (state.model && typeof (state.model as any) === 'function') {
-    try {
-      const output = await (state.model as any)(text, { pooling: 'mean', normalize: true });
-      // Handle both @xenova/transformers (output.data) and ruvector (plain array) formats
-      const embedding = output?.data
-        ? Array.from(output.data as Float32Array)
-        : Array.isArray(output) ? output : null;
-      if (embedding) {
-        return {
-          embedding,
-          dimensions: embedding.length,
-          model: 'onnx'
-        };
-      }
-    } catch {
-      // Fall through to fallback
-    }
-  }
-
-  // Deterministic hash-based fallback (for testing/demo without ONNX)
-  const embedding = generateHashEmbedding(text, state.dimensions);
-  return {
-    embedding,
-    dimensions: state.dimensions,
-    model: 'hash-fallback'
-  };
 }
 
 /**

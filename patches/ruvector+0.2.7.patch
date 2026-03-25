@@ -1,0 +1,233 @@
+diff --git a/node_modules/ruvector/bin/cli.js b/node_modules/ruvector/bin/cli.js
+index a04e051..f9f0a34 100755
+--- a/node_modules/ruvector/bin/cli.js
++++ b/node_modules/ruvector/bin/cli.js
+@@ -7926,7 +7926,7 @@ mcpCmd.command('test')
+ 
+ function getBrainConfig(opts) {
+   return {
+-    url: opts.url || process.env.BRAIN_URL || 'https://pi.ruv.io',
++    url: opts.url || process.env.BRAIN_URL || 'REMOVED_ENDPOINT',
+     key: opts.key || process.env.PI
+   };
+ }
+@@ -8265,7 +8265,7 @@ brainCmd.command('node <action> [args...]')
+ const agiCmd = brainCmd.command('agi').description('AGI subsystem diagnostics — SONA, GWT, temporal, meta-learning, midstream');
+ 
+ async function fetchBrainEndpoint(config, endpoint) {
+-  const url = (config.url || 'https://pi.ruv.io') + endpoint;
++  const url = (config.url || 'REMOVED_ENDPOINT') + endpoint;
+   const headers = {};
+   if (config.key) headers['Authorization'] = `Bearer ${config.key}`;
+   const resp = await proxyFetch(url, { headers, signal: AbortSignal.timeout(30000) });
+@@ -8490,7 +8490,7 @@ midstreamCmd.command('benchmark')
+   .option('--json', 'Output as JSON')
+   .action(async (opts) => {
+     const config = getBrainConfig(opts);
+-    const baseUrl = config.url || 'https://pi.ruv.io';
++    const baseUrl = config.url || 'REMOVED_ENDPOINT';
+     const headers = {};
+     if (config.key) headers['Authorization'] = `Bearer ${config.key}`;
+     const concurrentN = Math.min(parseInt(opts.concurrent) || 20, 100);
+@@ -8560,7 +8560,7 @@ midstreamCmd.command('benchmark')
+ 
+ const edgeCmd = program.command('edge').description('Distributed P2P compute network — status, join, balance, tasks');
+ 
+-const EDGE_GENESIS = 'https://edge-net-genesis-875130704813.us-central1.run.app';
++const EDGE_GENESIS = 'REMOVED_ENDPOINT';
+ 
+ edgeCmd.command('status')
+   .description('Show edge compute network status')
+diff --git a/node_modules/ruvector/bin/mcp-server.js b/node_modules/ruvector/bin/mcp-server.js
+index a5a3e19..da34136 100644
+--- a/node_modules/ruvector/bin/mcp-server.js
++++ b/node_modules/ruvector/bin/mcp-server.js
+@@ -3354,7 +3354,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
+       case 'brain_transfer':
+       case 'brain_sync': {
+         try {
+-          const brainUrl = process.env.BRAIN_URL || 'https://pi.ruv.io';
++          const brainUrl = process.env.BRAIN_URL || 'REMOVED_ENDPOINT';
+           const brainKey = process.env.PI;
+           const hdrs = { 'Content-Type': 'application/json' };
+           if (brainKey) hdrs['Authorization'] = `Bearer ${brainKey}`;
+@@ -3438,7 +3438,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
+       case 'brain_midstream':
+       case 'brain_flags': {
+         try {
+-          const brainUrl = process.env.BRAIN_URL || 'https://pi.ruv.io';
++          const brainUrl = process.env.BRAIN_URL || 'REMOVED_ENDPOINT';
+           const brainKey = process.env.PI;
+           const hdrs = { 'Content-Type': 'application/json' };
+           if (brainKey) hdrs['Authorization'] = `Bearer ${brainKey}`;
+@@ -3491,7 +3491,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
+       case 'midstream_attractor':
+       case 'midstream_scheduler': {
+         try {
+-          const brainUrl = process.env.BRAIN_URL || 'https://pi.ruv.io';
++          const brainUrl = process.env.BRAIN_URL || 'REMOVED_ENDPOINT';
+           const brainKey = process.env.PI;
+           const hdrs = { 'Content-Type': 'application/json' };
+           if (brainKey) hdrs['Authorization'] = `Bearer ${brainKey}`;
+@@ -3518,7 +3518,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
+ 
+       case 'midstream_benchmark': {
+         try {
+-          const brainUrl = process.env.BRAIN_URL || 'https://pi.ruv.io';
++          const brainUrl = process.env.BRAIN_URL || 'REMOVED_ENDPOINT';
+           const brainKey = process.env.PI;
+           const hdrs = { 'Content-Type': 'application/json' };
+           if (brainKey) hdrs['Authorization'] = `Bearer ${brainKey}`;
+@@ -3573,7 +3573,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
+ 
+       case 'midstream_search': {
+         try {
+-          const brainUrl = process.env.BRAIN_URL || 'https://pi.ruv.io';
++          const brainUrl = process.env.BRAIN_URL || 'REMOVED_ENDPOINT';
+           const brainKey = process.env.PI;
+           const hdrs = { 'Content-Type': 'application/json' };
+           if (brainKey) hdrs['Authorization'] = `Bearer ${brainKey}`;
+@@ -3593,7 +3593,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
+ 
+       case 'midstream_health': {
+         try {
+-          const brainUrl = process.env.BRAIN_URL || 'https://pi.ruv.io';
++          const brainUrl = process.env.BRAIN_URL || 'REMOVED_ENDPOINT';
+           const brainKey = process.env.PI;
+           const hdrs = { 'Content-Type': 'application/json' };
+           if (brainKey) hdrs['Authorization'] = `Bearer ${brainKey}`;
+@@ -3619,7 +3619,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
+       case 'edge_balance':
+       case 'edge_tasks': {
+         try {
+-          const genesisUrl = process.env.EDGE_GENESIS_URL || 'https://edge-net-genesis-875130704813.us-central1.run.app';
++          const genesisUrl = process.env.EDGE_GENESIS_URL || 'REMOVED_ENDPOINT';
+           const subCmd = name.replace('edge_', '');
+           let endpoint, method = 'GET', body;
+           switch (subCmd) {
+diff --git a/node_modules/ruvector/dist/core/adaptive-embedder.js b/node_modules/ruvector/dist/core/adaptive-embedder.js
+index 10b1785..7580684 100644
+--- a/node_modules/ruvector/dist/core/adaptive-embedder.js
++++ b/node_modules/ruvector/dist/core/adaptive-embedder.js
+@@ -767,7 +767,7 @@ class AdaptiveEmbedder {
+      */
+     getStats() {
+         return {
+-            baseModel: 'all-MiniLM-L6-v2',
++            baseModel: 'bge-large-en-v1.5',
+             dimension: this.dimension,
+             loraRank: this.config.loraRank,
+             loraParams: this.lora.getParams(),
+diff --git a/node_modules/ruvector/dist/core/intelligence-engine.js b/node_modules/ruvector/dist/core/intelligence-engine.js
+index bc48363..ea489dd 100644
+--- a/node_modules/ruvector/dist/core/intelligence-engine.js
++++ b/node_modules/ruvector/dist/core/intelligence-engine.js
+@@ -91,7 +91,7 @@ class IntelligenceEngine {
+         this.episodeBatchQueue = [];
+         // If ONNX is enabled, use 384 dimensions (MiniLM default)
+         const useOnnx = !!(config.enableOnnx && (0, onnx_embedder_1.isOnnxAvailable)());
+-        const embeddingDim = useOnnx ? 384 : (config.embeddingDim ?? 256);
++        const embeddingDim = useOnnx ? 1024 : (config.embeddingDim ?? 256);
+         this.config = {
+             embeddingDim,
+             maxMemories: config.maxMemories ?? 100000,
+diff --git a/node_modules/ruvector/dist/core/onnx-embedder.js b/node_modules/ruvector/dist/core/onnx-embedder.js
+index 9a1149a..a5cd194 100644
+--- a/node_modules/ruvector/dist/core/onnx-embedder.js
++++ b/node_modules/ruvector/dist/core/onnx-embedder.js
+@@ -96,7 +96,7 @@ let isInitialized = false;
+ let parallelEnabled = false;
+ let parallelThreshold = 4;
+ // Default model
+-const DEFAULT_MODEL = 'all-MiniLM-L6-v2';
++const DEFAULT_MODEL = 'bge-large-en-v1.5';
+ /**
+  * Check if ONNX embedder is available (bundled files exist)
+  */
+@@ -288,7 +288,7 @@ async function embedBatch(texts) {
+     if (parallelEnabled && parallelEmbedder && texts.length >= parallelThreshold) {
+         const batchResults = await parallelEmbedder.embedBatch(texts);
+         const totalTime = performance.now() - start;
+-        const dimension = parallelEmbedder.dimension || 384;
++        const dimension = parallelEmbedder.dimension || 1024;
+         return batchResults.map((emb) => ({
+             embedding: Array.from(emb),
+             dimension,
+diff --git a/node_modules/ruvector/dist/core/onnx-optimized.js b/node_modules/ruvector/dist/core/onnx-optimized.js
+index 7a4b763..cdce198 100644
+--- a/node_modules/ruvector/dist/core/onnx-optimized.js
++++ b/node_modules/ruvector/dist/core/onnx-optimized.js
+@@ -166,9 +166,9 @@ class OptimizedOnnxEmbedder {
+         // Stats
+         this.totalEmbeds = 0;
+         this.totalTimeMs = 0;
+-        this.dimension = 384;
++        this.dimension = 1024;
+         this.config = {
+-            modelId: config.modelId ?? 'all-MiniLM-L6-v2',
++            modelId: config.modelId ?? 'bge-large-en-v1.5',
+             useQuantized: config.useQuantized ?? true,
+             quantization: config.quantization ?? 'fp16',
+             maxLength: config.maxLength ?? 256,
+diff --git a/node_modules/ruvector/dist/core/onnx/loader.js b/node_modules/ruvector/dist/core/onnx/loader.js
+index b20b167..9060228 100644
+--- a/node_modules/ruvector/dist/core/onnx/loader.js
++++ b/node_modules/ruvector/dist/core/onnx/loader.js
+@@ -59,6 +59,17 @@ export const MODELS = {
+         tokenizer: 'https://huggingface.co/intfloat/e5-small-v2/resolve/main/tokenizer.json',
+     },
+ 
++    // BGE Large - Best open-source quality
++    'bge-large-en-v1.5': {
++        name: 'bge-large-en-v1.5',
++        dimension: 1024,
++        maxLength: 512,
++        size: '330MB',
++        description: 'Best open-source embedding quality (1024d)',
++        model: 'https://huggingface.co/BAAI/bge-large-en-v1.5/resolve/main/onnx/model.onnx',
++        tokenizer: 'https://huggingface.co/BAAI/bge-large-en-v1.5/resolve/main/tokenizer.json',
++    },
++
+     // GTE Models - Alibaba
+     'gte-small': {
+         name: 'gte-small',
+@@ -74,7 +85,7 @@ export const MODELS = {
+ /**
+  * Default model for quick start
+  */
+-export const DEFAULT_MODEL = 'all-MiniLM-L6-v2';
++export const DEFAULT_MODEL = 'bge-large-en-v1.5';
+ 
+ /**
+  * Model loader with caching support
+diff --git a/node_modules/ruvector/dist/core/onnx/pkg/loader.js b/node_modules/ruvector/dist/core/onnx/pkg/loader.js
+index c4abd5f..609add6 100644
+--- a/node_modules/ruvector/dist/core/onnx/pkg/loader.js
++++ b/node_modules/ruvector/dist/core/onnx/pkg/loader.js
+@@ -59,6 +59,17 @@ export const MODELS = {
+         tokenizer: 'https://huggingface.co/intfloat/e5-small-v2/resolve/main/tokenizer.json',
+     },
+ 
++    // BGE Large - Best open-source quality
++    'bge-large-en-v1.5': {
++        name: 'bge-large-en-v1.5',
++        dimension: 1024,
++        maxLength: 512,
++        size: '330MB',
++        description: 'Best open-source embedding quality (1024d)',
++        model: 'https://huggingface.co/BAAI/bge-large-en-v1.5/resolve/main/onnx/model.onnx',
++        tokenizer: 'https://huggingface.co/BAAI/bge-large-en-v1.5/resolve/main/tokenizer.json',
++    },
++
+     // GTE Models - Alibaba
+     'gte-small': {
+         name: 'gte-small',
+@@ -74,7 +85,7 @@ export const MODELS = {
+ /**
+  * Default model for quick start
+  */
+-export const DEFAULT_MODEL = 'all-MiniLM-L6-v2';
++export const DEFAULT_MODEL = 'bge-large-en-v1.5';
+ 
+ /**
+  * Model loader with caching support
